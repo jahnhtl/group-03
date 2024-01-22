@@ -18,6 +18,148 @@
 int startButtonPin = 2;  // Pin für den Start-Taster
 int stopButtonPin = 3;   // Pin für den Stop-Taster
 
+const int sensorPinRechts = A5; // Right sensor
+const int sensorPinLinks = A2;  // Left sensor
+const int sensorPinVorne = A0;  // Front sensor
+
+int IN1 = 5;
+int IN2 = 6;
+int IN3 = 9;
+int IN4 = 11;
+
+bool isStarted = false; 
+
+void stopMotors(); // Function prototype
+
+void setup() {
+  pinMode(startButtonPin, INPUT_PULLUP);
+  pinMode(stopButtonPin, INPUT_PULLUP);
+
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+
+  Serial.begin(9600);
+  Serial.println("HALLO");
+}
+
+void loop() {
+  if (digitalRead(startButtonPin) == LOW) {
+    Serial.println("Start-Taster gedrückt!");
+    isStarted = true; // Setze den Startstatus auf true, wenn der Start-Button gedrückt wird
+    //delay(500); // Entprellzeit
+  }
+
+  if (digitalRead(stopButtonPin) == LOW) {
+    Serial.println("Stop-Taster gedrückt!");
+    stopMotors(); // Stoppe die Motoren, wenn der Stop-Button gedrückt wird
+    isStarted = false; // Setze den Startstatus auf false
+    //delay(500); // Entprellzeit
+  }
+
+  if (isStarted) {
+    sensorRechts(); // Right sensor auslesen
+    sensorLinks();  // Left sensor auslesen
+    sensorVorne();  // Front sensor auslesen
+  }
+}
+
+void stopMotors() {
+  analogWrite(IN1, 0);
+  analogWrite(IN2, 0);
+  analogWrite(IN3, 0);
+  analogWrite(IN4, 0);
+}
+
+void forward() {
+  analogWrite(IN1, 0);
+  analogWrite(IN2, 180);
+  analogWrite(IN3, 180);
+  analogWrite(IN4, 0);
+}
+
+void rechtsBiegen() {
+  analogWrite(IN1, 0);
+  analogWrite(IN2, 90);
+  analogWrite(IN3, 180);
+  analogWrite(IN4, 0);
+}
+
+void linksBiegen() {
+  analogWrite(IN1, 0);
+  analogWrite(IN2, 180);
+  analogWrite(IN3, 90);
+  analogWrite(IN4, 0);
+}
+
+
+
+
+void sensorRechts() {
+  int sensorValueRechts = analogRead(sensorPinRechts);
+  float distanceRechts = 5100.0 / (sensorValueRechts - 30.0);
+  
+
+  Serial.print(" Abstand Sensor rechts: ");
+  Serial.print(distanceRechts);
+  Serial.print(" cm ");
+
+  if (distanceRechts > 32) {
+    rechtsBiegen();
+  }
+  else {
+    forward();
+  }
+}
+
+void sensorLinks() {
+  int sensorValueLinks = analogRead(sensorPinLinks);
+  //Serial.print("Sensorwert links: ");
+  //Serial.println(sensorValueLinks);
+
+  float distanceLinks = 5100.0 / (sensorValueLinks - 30.0);
+  //float distanceLinks = sensorValueLinks;
+
+  Serial.print(" Abstand Sensor links: ");
+  Serial.print(distanceLinks);
+  Serial.print(" cm ");
+
+  if (distanceLinks > 40) {
+    linksBiegen();
+  }
+  else {
+    forward();
+  }
+}
+
+void sensorVorne() {
+  int sensorValueVorne = analogRead(sensorPinVorne);
+
+  
+  float distanceVorne = 10650.08 * pow(sensorValueVorne,-0.935) - 10;
+ 
+  
+
+  Serial.print(" Abstand Sensor vorne: ");
+  Serial.print(distanceVorne);
+  Serial.print(" cm \n ");
+
+  if (sensorValueVorne <= 22) {
+    stopMotors();
+  }
+  else {
+    forward();
+  }
+
+}
+
+
+/*
+// Definitions Arduino pins connected to input H Bridge
+int startButtonPin = 2;  // Pin für den Start-Taster
+int stopButtonPin = 3;   // Pin für den Stop-Taster
+
 const int sensorPin = A5; // Analog pin the sensor is connected to
 const int sensorPinV = A0;
 
@@ -118,7 +260,8 @@ void sensorvorne(){
   if(sensorValue2<=500){
     stopMotors();
   }
-  }
+ }
+ */
 /*
 //Definitions Arduino pins connected to input H Bridge
 int startButtonPin = 2;  // Pin für den Start-Taster
