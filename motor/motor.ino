@@ -29,7 +29,7 @@ int IN4 = 11;
 
 bool isStarted = false; 
 
-void stopMotors(); // Function prototype
+//void stopMotors(); // Function prototype
 
 void setup() {
   pinMode(startButtonPin, INPUT_PULLUP);
@@ -76,41 +76,43 @@ void loop() {
     Serial.print(" Abstand Sensor vorne: ");
     Serial.print(distanceVorne);
     Serial.print(" cm \n ");
+
+     
+
     
-    if (distanceVorne <= 22) {
+    if (distanceVorne >= 25) {
       // Wenn der vordere Sensor ein Hindernis erkennt, fahre rückwärts
       // Hier könnten Sie auch die Logik implementieren, um Hindernissen auszuweichen
       // Für dieses Beispiel fahren wir einfach rückwärts und drehen dann nach links oder rechts
-      analogWrite(IN1, 180);
-      analogWrite(IN2, 0);
-      analogWrite(IN3, 0);
-      analogWrite(IN4, 180);
+      analogWrite(IN1, 0);
+      analogWrite(IN2, 180);
+      analogWrite(IN3, 180);
+      analogWrite(IN4, 0);
       //delay(500); // Ein kurzer Moment rückwärts fahren
       // Fügen Sie hier Ihre Logik hinzu, um festzulegen, ob Sie nach links oder rechts drehen müssen
       // Je nach den Werten der Sensoren oder anderen Bedingungen
     } else {
-      // Überprüfen Sie die Sensoren, um zu entscheiden, ob das Auto nach links oder rechts fahren soll
-      if (distanceRechts > distanceLinks) {
+      stopMotors();
+      //delay(3000);
+
+      
+       if (distanceRechts > distanceLinks) {
         // Rechter Sensor hat mehr Platz, also rechts abbiegen
-        analogWrite(IN1, 0);
-        analogWrite(IN2, 180);
-        analogWrite(IN3, 90);
-        analogWrite(IN4, 0);
-      } else if (distanceLinks > distanceRechts) {
-        // Linker Sensor hat mehr Platz, also links abbiegen
-        analogWrite(IN1, 0);
-        analogWrite(IN2, 90);
-        analogWrite(IN3, 180);
-        analogWrite(IN4, 0);
-      } else {
-        // Die Werte der Sensoren sind ungefähr gleich, also geradeaus fahren
-        analogWrite(IN1, 0);
-        analogWrite(IN2, 180);
-        analogWrite(IN3, 180);
-        analogWrite(IN4, 0);
+      do {rechts();
       }
+      while (distanceVorne >=60);
+     } else if (distanceLinks > distanceRechts) {
+        // Linker Sensor hat mehr Platz, also links abbiegen
+       do {links();
+       }
+       while (distanceVorne >=60);
+      } 
     }
-  }
+      
+      // Überprüfen Sie die Sensoren, um zu entscheiden, ob das Auto nach links oder rechts fahren soll
+     
+    }
+ 
 }
 
 void stopMotors() {
@@ -120,6 +122,19 @@ void stopMotors() {
   analogWrite(IN4, 0);
 }
 
+void rechts(){
+        analogWrite(IN1, 0);
+        analogWrite(IN2, 180);
+        analogWrite(IN3, 0);
+        analogWrite(IN4, 0);
+  }
+
+void links(){
+        analogWrite(IN1, 0);
+        analogWrite(IN2, 0);
+        analogWrite(IN3, 180);
+        analogWrite(IN4, 0);
+  }
 
 // Definitions Arduino pins connected to input H Bridge
 /*int startButtonPin = 2;  // Pin für den Start-Taster
