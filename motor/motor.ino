@@ -80,7 +80,7 @@ void loop() {
      
 
     
-    if (distanceVorne >= 25) {
+    if (distanceVorne >= 35) {
       // Wenn der vordere Sensor ein Hindernis erkennt, fahre rückwärts
       // Hier könnten Sie auch die Logik implementieren, um Hindernissen auszuweichen
       // Für dieses Beispiel fahren wir einfach rückwärts und drehen dann nach links oder rechts
